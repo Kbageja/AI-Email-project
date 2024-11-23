@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { PORT } from "./config/index.js";
 import connectDB from "./config/db.js";
 import UserRouter from "./routes/user.js";
+import CampaignRouter from "./routes/campaign.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -11,12 +13,14 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
 app.use("/user", UserRouter);
+app.use("/campaign", CampaignRouter);
 
 //dummy company info api
 const companyData = [

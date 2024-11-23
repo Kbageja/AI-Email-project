@@ -4,7 +4,7 @@ import sendResponse from "../utils/responseHandler.js";
 import bcrypt from "bcrypt";
 
 // user register
-const userRegister = async (req, res) => {
+export const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -43,7 +43,7 @@ const userRegister = async (req, res) => {
 };
 
 //user login
-const userLogin = async (req, res) => {
+export const userLogin = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return sendResponse(res, 400, false, "All fields are required");
@@ -76,7 +76,7 @@ const userLogin = async (req, res) => {
 };
 
 //user logout
-const userLogout = (req, res) => {
+export const userLogout = (req, res) => {
   try {
     res.cookie("token", null, { expires: new Date(0), httpOnly: true });
 
@@ -86,5 +86,3 @@ const userLogout = (req, res) => {
     return sendResponse(res, 500, false, "An error occurred during logout");
   }
 };
-
-export { userRegister, userLogout, userLogin };
