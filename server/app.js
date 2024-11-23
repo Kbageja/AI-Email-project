@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { PORT } from "./config/index.js";
 import connectDB from "./config/db.js";
+import UserRouter from "./routes/user.js";
 
 dotenv.config();
 
@@ -13,6 +14,36 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Hello world");
+});
+
+app.use("/user", UserRouter);
+
+//dummy company info api
+const companyData = [
+  { company_name: "sasefied", info: "took recently funding" },
+  { company_name: "techly", info: "specializes in AI-driven solutions" },
+  {
+    company_name: "buildnext",
+    info: "focused on sustainable construction technologies",
+  },
+];
+app.get("/api/company", (req, res) => {
+  const { name } = req.query; // Fetch company name from query parameters
+
+  if (!name) {
+    return res.status(400).json({ error: "Company name is required" });
+  }
+
+  // Find company by name
+  const company = companyData.find(
+    (c) => c.company_name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (!company) {
+    return res.status(404).json({ error: "Company not found" });
+  }
+
+  res.json({ success: true, data: company });
 });
 
 app.listen(PORT, () => {
