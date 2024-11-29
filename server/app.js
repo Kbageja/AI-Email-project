@@ -4,6 +4,7 @@ import { PORT } from "./config/index.js";
 import connectDB from "./config/db.js";
 import UserRouter from "./routes/user.js";
 import CampaignRouter from "./routes/campaign.js";
+import RecipientRouter from "./routes/recipient.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./middleware/auth.js";
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", UserRouter);
 app.use("/campaign", isAuthenticated, CampaignRouter);
+app.use("/recipient", RecipientRouter);
 
 //dummy company info api
 const companyData = [
