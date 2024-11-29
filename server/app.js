@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import UserRouter from "./routes/user.js";
 import CampaignRouter from "./routes/campaign.js";
 import cookieParser from "cookie-parser";
+import { isAuthenticated } from "./middleware/auth.js";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/user", UserRouter);
-app.use("/campaign", CampaignRouter);
+app.use("/campaign", isAuthenticated, CampaignRouter);
 
 //dummy company info api
 const companyData = [

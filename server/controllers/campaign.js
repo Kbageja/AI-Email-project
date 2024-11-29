@@ -1,6 +1,7 @@
 import Campaign from "../models/campaign.js";
 import sendResponse from "../utils/responseHandler.js";
 
+//create campaign
 export const createCampaign = async (req, res) => {
   const { name, description, status } = req.body;
   const user = req.user;
@@ -36,6 +37,7 @@ export const createCampaign = async (req, res) => {
   }
 };
 
+//update campaign
 export const updateCampaign = async (req, res) => {
   const { campaignId } = req.params;
   const { name, description, status } = req.body;
@@ -86,6 +88,7 @@ export const updateCampaign = async (req, res) => {
   }
 };
 
+// get all campaigns created by users
 export const getUserCampaigns = async (req, res) => {
   const userId = req.user._id;
 
@@ -116,6 +119,38 @@ export const getUserCampaigns = async (req, res) => {
       500,
       false,
       "Server error while retrieving campaigns"
+    );
+  }
+};
+
+// delete capaign
+export const deleteCampaign = async (req, res) => {
+  const { campaignId } = req.params;
+  if (!campaignId) {
+    return sendResponse(res, 400, false, "Campaign ID is required");
+  }
+
+  try {
+    const deletedCampaign = await Campaign.findByIdAndDelete(campaignId);
+
+    if (!deletedCampaign) {
+      return sendResponse(res, 404, false, "Campaign not found");
+    }
+
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Campaign deleted successfully",
+      deletedCampaign
+    );
+  } catch (error) {
+    console.error(error);
+    return sendResponse(
+      res,
+      500,
+      false,
+      "Server error while deleting campaign"
     );
   }
 };
