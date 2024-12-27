@@ -7,6 +7,7 @@ import CampaignRouter from "./routes/campaign.js";
 import RecipientRouter from "./routes/recipient.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./middleware/auth.js";
+import EmailContentRouter from "./routes/generateEmail.js";
 
 dotenv.config();
 
@@ -23,12 +24,16 @@ app.get("/", (req, res) => {
 
 app.use("/user", UserRouter);
 app.use("/campaign", isAuthenticated, CampaignRouter);
-app.use("/recipient", RecipientRouter);
+app.use("/recipient", isAuthenticated, RecipientRouter);
+app.use("/emails", EmailContentRouter);
 
-//dummy company info api
+// Dummy company info API (For testing purposes)
 const companyData = [
   { company_name: "sasefied", info: "took recently funding" },
-  { company_name: "techly", info: "specializes in AI-driven solutions" },
+  {
+    company_name: "techly",
+    info: "Lost all his assets and stocks price are decreasing",
+  },
   {
     company_name: "buildnext",
     info: "focused on sustainable construction technologies",
