@@ -1,6 +1,7 @@
 import { OpenAI } from "openai"; // Import OpenAI from the new SDK
 import axios from "axios"; // Axios for making HTTP requests
 import NodeCache from "node-cache"; // In-memory cache (replacing Redis)
+import nodemailer from "nodemailer";
 
 // OpenAI Configuration
 const openai = new OpenAI({
@@ -11,6 +12,14 @@ const openai = new OpenAI({
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080/api", // Replace with your API's base URL
   timeout: 5000, // Optional: set a timeout
+});
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_SENDER, // Replace with your email
+    pass: process.env.EMAIL_PASS, // Replace with your email password or app password
+  },
 });
 
 // In-memory cache configuration
@@ -112,5 +121,38 @@ export const generateEmailController = async (req, res) => {
   } catch (error) {
     console.error("Error generating emails:", error);
     res.status(500).json({ error: "Failed to generate emails" });
+  }
+};
+
+export const emailSending = async (req, res) => {
+  const { emails } = req.body; // Extract the email data from the request body
+
+  if (!emails || !Array.isArray(emails)) {
+    return res.status(400).json({ error: "Invalid email data format." });
+  }
+
+  try {
+    // Iterate over each email object in the array
+    for (const { email, content } of emails) {
+      const subject = content.split("\n")[0]; // First line is the subject
+      const text = content.split("\n").slice(1).join("\n"); // Rest is the body of the email
+
+      const mailOptions = {
+        from: "your-email@gmail.com", // Sender address
+        to: email, // Recipient address
+        subject, // Subject
+        text, // Body of the email
+      };
+
+      // Send the email
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${email}: ${info.response}`);
+    }
+
+    // Send success response
+    res.status(200).json({ message: "Emails sent successfully!" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res.status(500).json({ error: "Failed to send emails." });
   }
 };

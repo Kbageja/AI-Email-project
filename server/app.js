@@ -7,7 +7,7 @@ import CampaignRouter from "./routes/campaign.js";
 import RecipientRouter from "./routes/recipient.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./middleware/auth.js";
-import EmailContentRouter from "./routes/generateEmail.js";
+import EmailContentRouter from "./routes/emails.js";
 
 dotenv.config();
 
