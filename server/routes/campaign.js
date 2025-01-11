@@ -8,8 +8,8 @@ import {
 
 const router = express.Router();
 
-router.post("/create", createCampaign);
-router.put("/update/:campaignId", updateCampaign);
+router.post("/create/:type", createCampaign);
+router.put("/update/:campaignId/:type", updateCampaign);
 router.get("/getUserCampaigns", getUserCampaigns);
 router.delete("/delete/:campaignId", deleteCampaign);
 
