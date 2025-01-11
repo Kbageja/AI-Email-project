@@ -9,7 +9,7 @@ const router = express.Router();
 
 // API Endpoint: Generate Emails
 router.post("/generate", generateEmailController);
-router.post("/send-emails", emailSending);
-router.post("/send-gamified-emails", gamifiedEmailSending);
+router.post("/send-emails/:campaignId", emailSending);
+router.post("/send-gamified-emails/:campaignId", gamifiedEmailSending);
 
 export default router;
