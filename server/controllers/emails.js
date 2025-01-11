@@ -2,6 +2,7 @@ import { OpenAI } from "openai"; // Import OpenAI from the new SDK
 import axios from "axios"; // Axios for making HTTP requests
 import NodeCache from "node-cache"; // In-memory cache (replacing Redis)
 import nodemailer from "nodemailer";
+import { generateEmailTemplate } from "../emailTemplate/emailTemplate.js";
 
 // OpenAI Configuration
 const openai = new OpenAI({
@@ -150,6 +151,59 @@ export const emailSending = async (req, res) => {
     }
 
     // Send success response
+    res.status(200).json({ message: "Emails sent successfully!" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res.status(500).json({ error: "Failed to send emails." });
+  }
+};
+
+export const gamifiedEmailSending = async (req, res) => {
+  const { emails, text, imageUrl, buttonLink, subject } = req.body;
+
+  if (!emails || !Array.isArray(emails)) {
+    return res.status(400).json({ error: "Invalid email data format." });
+  }
+
+  if (!text || typeof text !== "string") {
+    return res.status(400).json({ error: "Invalid text format." });
+  }
+
+  if (!subject || typeof subject !== "string") {
+    return res.status(400).json({ error: "Invalid text format." });
+  }
+
+  if (!imageUrl || typeof imageUrl !== "string") {
+    return res.status(400).json({ error: "Invalid image URL format." });
+  }
+
+  if (!buttonLink || typeof buttonLink !== "string") {
+    return res.status(400).json({ error: "Invalid button link format." });
+  }
+
+  try {
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: process.env.EMAIL_SENDER,
+    //     pass: process.env.EMAIL_PASS,
+    //   },
+    // });
+
+    for (const email of emails) {
+      const htmlTemplate = generateEmailTemplate(text, imageUrl, buttonLink);
+
+      const mailOptions = {
+        from: "your-email@gmail.com",
+        to: email,
+        subject: subject,
+        html: htmlTemplate,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${email}: ${info.response}`);
+    }
+
     res.status(200).json({ message: "Emails sent successfully!" });
   } catch (error) {
     console.error("Error sending emails:", error);
