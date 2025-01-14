@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is set in the environment
+  apiKey:"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", // Ensure your API key is set in the environment
 });
 
 // Axios Instance for external API calls

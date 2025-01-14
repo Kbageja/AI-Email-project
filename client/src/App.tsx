@@ -1,9 +1,24 @@
-import { Button } from "@/components/ui/button";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import AuthProvider from "./contexts/userContext"; // Ensure this path is correct
+import SideBarProvider from "./contexts/sideBarContext"; // Import the new SideBarProvider
+import { RouterProvider } from "react-router-dom"; // Import RouterProvider
+import router from "./routes/router"; // Import the router from your routes file
+import "./App.css";
 
-export default function Home() {
+const App = () => {
+  const queryClient = new QueryClient();
+
   return (
-    <div>
-      <Button>Click me</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <SideBarProvider>
+          <RouterProvider router={router} /> {/* Use RouterProvider with your router */}
+        </SideBarProvider>
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
-}
+};
+
+export default App;
