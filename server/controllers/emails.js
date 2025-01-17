@@ -10,12 +10,12 @@ import Campaign from "../models/campaign.js";
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey:"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", // Ensure your API key is set in the environment
+  apiKey:process.env.OPENAI_API_KEY, // Ensure your API key is set in the environment
 });
 
 // Axios Instance for external API calls
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api", // Replace with your API's base URL
+  baseURL: "http://localhost:5000/api", // Replace with your API's base URL
   timeout: 5000, // Optional: set a timeout
 });
 
@@ -110,9 +110,10 @@ export const generateEmailController = async (req, res) => {
     const emailPromises = recipients.map(async (recipient) => {
       // Fetch company info with retry logic and fallback
       const companyInfo = await fetchCompanyInfo(recipient.companyName);
-
+      console.log("companyInfo"+JSON.stringify(companyInfo));
       // Generate email content with or without company info
       const content = await generateEmailContent(recipient, companyInfo);
+      console.log("jsutme");
 
       return {
         email: recipient.email,
@@ -125,7 +126,7 @@ export const generateEmailController = async (req, res) => {
     res.status(200).json({ emails });
   } catch (error) {
     console.error("Error generating emails:", error);
-    res.status(500).json({ error: "Failed to generate emails" });
+    res.status(500).json({ error: error.message });
   }
 };
 

@@ -43,6 +43,9 @@ const normalLink =
       logout(undefined, {
         onSuccess: () => {
           localStorage.removeItem("selectedSidebarItem");
+          localStorage.removeItem("selectedCampaignId");
+          localStorage.removeItem("selectedRecipients");
+          localStorage.removeItem("extractedData");
           auth?.logout();
           navigate("/");
         },

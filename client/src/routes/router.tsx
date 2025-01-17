@@ -10,6 +10,7 @@ import { LandingLayout } from "@/layouts/LandingLayout";
 import SendEmail from "@/pages/SendEmails";
 import CreateCampaign from "@/pages/CreateCampaign";
 import CreatedCampaign from "@/pages/CreatedCampaign";
+import EmailSlider from "@/components/custom/GenEmail";
 
 
 const router = createBrowserRouter([
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "/user/dashboard/CreateCampaign", element: <CreateCampaign /> },
       { path: "/user/dashboard/CreatedCampaign", element: <CreatedCampaign /> },
       { path: "/user/dashboard/sendEmail", element: <SendEmail /> },
+      { path: "/user/dashboard/emailSlider", element: <EmailSlider /> },
     ],
   },
 ]);

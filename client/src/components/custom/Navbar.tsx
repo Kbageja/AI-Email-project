@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { AuthContext } from "@/contexts/userContext";
 
-
+ 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
