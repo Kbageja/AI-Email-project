@@ -5,7 +5,19 @@ import sendResponse from "../utils/responseHandler.js";
 export const createCampaign = async (req, res) => {
   const { name, description, status } = req.body;
   const user = req.user;
+  const { type } = req.params; // Extract type from params
 
+  // Validate type to ensure it's either 'normal' or 'gamified'
+  if (!["normal", "gamified"].includes(type)) {
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Invalid campaign type. It must be 'normal' or 'gamified'."
+    );
+  }
+
+  // Validate required fields
   if (!name || !description) {
     return sendResponse(res, 400, false, "Please enter all details");
   }
@@ -16,7 +28,24 @@ export const createCampaign = async (req, res) => {
       description,
       status: status || "draft",
       userId: user._id,
+      type, // Set the type (normal or gamified)
     });
+
+    // If the type is gamified, you can optionally add gamified-specific fields
+    if (type === "gamified") {
+      const { rewards, logoUrl, validUntil } = req.body;
+      if (!rewards || !logoUrl || !validUntil) {
+        return sendResponse(
+          res,
+          400,
+          false,
+          "Gamified campaigns require rewards, logoUrl, and validUntil."
+        );
+      }
+      newCampaign.rewards = rewards;
+      newCampaign.logoUrl = logoUrl;
+      newCampaign.validUntil = validUntil;
+    }
 
     const savedCampaign = await newCampaign.save();
     return sendResponse(
@@ -39,14 +68,25 @@ export const createCampaign = async (req, res) => {
 
 //update campaign
 export const updateCampaign = async (req, res) => {
-  const { campaignId } = req.params;
-  const { name, description, status } = req.body;
+  const { campaignId, type } = req.params; // Extract campaignId and type from params
+  const { name, description, status, rewards, logoUrl, validUntil } = req.body;
 
+  // Validate campaignId and type
   if (!campaignId) {
     return sendResponse(res, 400, false, "Campaign ID is required");
   }
 
-  if (!name && !description && !status) {
+  if (!["normal", "gamified"].includes(type)) {
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Invalid campaign type. It must be 'normal' or 'gamified'."
+    );
+  }
+
+  // Validate at least one field to update
+  if (!name && !description && !status && !rewards && !logoUrl && !validUntil) {
     return sendResponse(
       res,
       400,
@@ -56,19 +96,31 @@ export const updateCampaign = async (req, res) => {
   }
 
   try {
+    // Find the campaign by ID
+    const campaign = await Campaign.findById(campaignId);
+
+    if (!campaign) {
+      return sendResponse(res, 404, false, "Campaign not found");
+    }
+
+    // Ensure the campaign type is not changed (if necessary)
+    if (campaign.type !== type) {
+      return sendResponse(res, 400, false, "Cannot change campaign type.");
+    }
+
+    // Update fields
     const updatedCampaign = await Campaign.findByIdAndUpdate(
       campaignId,
       {
         name: name || undefined,
         description: description || undefined,
         status: status || undefined,
+        rewards: type === "gamified" ? rewards : undefined, // Only update rewards for gamified campaigns
+        logoUrl: type === "gamified" ? logoUrl : undefined, // Only update logoUrl for gamified campaigns
+        validUntil: type === "gamified" ? validUntil : undefined, // Only update validUntil for gamified campaigns
       },
       { new: true, runValidators: true }
     );
-
-    if (!updatedCampaign) {
-      return sendResponse(res, 404, false, "Campaign not found");
-    }
 
     return sendResponse(
       res,

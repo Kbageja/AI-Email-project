@@ -2,6 +2,11 @@ import { OpenAI } from "openai"; // Import OpenAI from the new SDK
 import axios from "axios"; // Axios for making HTTP requests
 import NodeCache from "node-cache"; // In-memory cache (replacing Redis)
 import nodemailer from "nodemailer";
+import handlebars from "handlebars";
+import { fileURLToPath } from "url";
+import fs from "fs/promises";
+import path from "path";
+import Campaign from "../models/campaign.js";
 
 // OpenAI Configuration
 const openai = new OpenAI({
@@ -126,6 +131,7 @@ export const generateEmailController = async (req, res) => {
 
 export const emailSending = async (req, res) => {
   const { emails } = req.body; // Extract the email data from the request body
+  const { campaignId } = req.params;
 
   if (!emails || !Array.isArray(emails)) {
     return res.status(400).json({ error: "Invalid email data format." });
@@ -147,9 +153,78 @@ export const emailSending = async (req, res) => {
       // Send the email
       const info = await transporter.sendMail(mailOptions);
       console.log(`Email sent to ${email}: ${info.response}`);
+      await Campaign.findByIdAndUpdate(campaignId, {
+        status: "complete",
+      });
     }
 
     // Send success response
+    res.status(200).json({ message: "Emails sent successfully!" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res.status(500).json({ error: "Failed to send emails." });
+  }
+};
+
+export const gamifiedEmailSending = async (req, res) => {
+  const { emails, text, imageUrl, buttonLink, subject } = req.body;
+  const { campaignId } = req.params;
+
+  if (!emails || !Array.isArray(emails)) {
+    return res.status(400).json({ error: "Invalid email data format." });
+  }
+
+  if (!text || typeof text !== "string") {
+    return res.status(400).json({ error: "Invalid text format." });
+  }
+
+  if (!subject || typeof subject !== "string") {
+    return res.status(400).json({ error: "Invalid subject format." });
+  }
+
+  if (!imageUrl || typeof imageUrl !== "string") {
+    return res.status(400).json({ error: "Invalid image URL format." });
+  }
+
+  if (!buttonLink || typeof buttonLink !== "string") {
+    return res.status(400).json({ error: "Invalid button link format." });
+  }
+
+  try {
+    // Define __dirname for ES modules
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    // Load the Handlebars template file
+    const templatePath = path.resolve(
+      __dirname,
+      "../emailTemplate/emailTemplate.hbs"
+    );
+    const templateSource = await fs.readFile(templatePath, "utf8");
+    const template = handlebars.compile(templateSource);
+
+    for (const email of emails) {
+      // Generate the email HTML using the template
+      const htmlTemplate = template({
+        text,
+        imageUrl,
+        buttonLink,
+      });
+
+      const mailOptions = {
+        from: "your-email@gmail.com",
+        to: email,
+        subject: subject,
+        html: htmlTemplate,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${email}: ${info.response}`);
+      await Campaign.findByIdAndUpdate(campaignId, {
+        status: "complete",
+      });
+    }
+
     res.status(200).json({ message: "Emails sent successfully!" });
   } catch (error) {
     console.error("Error sending emails:", error);

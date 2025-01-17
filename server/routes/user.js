@@ -1,8 +1,8 @@
 import express from "express";
 import { userLogin, userLogout, userRegister } from "../controllers/user.js";
 import loginLimiter from "../utils/loginLimiter.js";
-import { isAuthenticated } from "../middleware/auth.js";
 import sendResponse from "../utils/responseHandler.js";
+import { isAuthenticated } from "../middleware/auth.js";
 
 const router = express.Router();
 
