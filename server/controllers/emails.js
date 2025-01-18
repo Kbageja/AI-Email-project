@@ -15,7 +15,7 @@ const openai = new OpenAI({
 
 // Axios Instance for external API calls
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api", // Replace with your API's base URL
+  baseURL:  `${process.env.PORT}/api`, // Replace with your API's base URL
   timeout: 5000, // Optional: set a timeout
 });
 
