@@ -8,13 +8,21 @@ import RecipientRouter from "./routes/recipient.js";
 import cookieParser from "cookie-parser";
 import { isAuthenticated } from "./middleware/auth.js";
 import EmailContentRouter from "./routes/emails.js";
+import cors from "cors" 
 
 dotenv.config();
 
 const app = express();
 
+
+
 connectDB();
 
+app.use(cors({
+  origin:[process.env.FRONTENDURL||"http://localhost:5173"],
+  methods:["GET","POST","PUT","DELETE"],
+  credentials:true,
+}))
 app.use(express.json());
 app.use(cookieParser());
 
