@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 
-
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -11,7 +10,6 @@ import SendEmail from "@/pages/SendEmails";
 import CreateCampaign from "@/pages/CreateCampaign";
 import CreatedCampaign from "@/pages/CreatedCampaign";
 import EmailSlider from "@/components/custom/GenEmail";
-
 
 const router = createBrowserRouter([
   // Main Layout Routes
@@ -28,7 +26,7 @@ const router = createBrowserRouter([
   {
     path: "/user/dashboard",
     element: <DashboardLayout />,
-    children: [ 
+    children: [
       { path: "/user/dashboard/CreateCampaign", element: <CreateCampaign /> },
       { path: "/user/dashboard/CreatedCampaign", element: <CreatedCampaign /> },
       { path: "/user/dashboard/sendEmail", element: <SendEmail /> },
