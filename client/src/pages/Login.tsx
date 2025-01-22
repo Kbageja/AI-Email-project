@@ -30,7 +30,7 @@ const formSchema = z.object({
   password: z
     .string()
     .min(1, { message: "Required" })
-    .min(8, { message: "Password must be of min 8 characters." }),
+    .min(2, { message: "Password must be of min 8 characters." }),
 });
 
 const Login = () => {
@@ -122,7 +122,6 @@ const Login = () => {
               Sign up
             </NavLink>
           </p>
-          
         </CardFooter>
       </Card>
     </div>

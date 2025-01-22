@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-config({ path: "./config.env" }); 
+config({ path: "./.env" });
 
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
